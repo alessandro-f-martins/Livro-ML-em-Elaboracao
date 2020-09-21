@@ -34,11 +34,11 @@ No primeiro caso, temos uma empresa de serviços de telecomunicações (internet
 - Quais são os clientes em minha base mais propensos à desistência no próximo ciclo de avaliação de *Churn*? Quais ações devem ser tomadas para mantê-los?
 - Quais as melhores campanhas a se organizar para garantir a fidelização de meus clientes?
 
-Consideremos os custos de retenção ativa – campanhas orientadas especificamente ao cliente em vias de desistência. Queremos minimizar esses custos focando apenas neste grupo de clientes, ao mesmo tempo que levamos em conta o (desejável) efeito colateral de que, fornecendo ao cliente satisfeito apenas a propaganda que lhe faça sentido, sua satisfação tende a ser maior. Logo, ao se lançar mão de métodos de análise preditiva utilizando aprendizado de máquina, queremos:
+Consideremos os custos de retenção ativa, que corresponde a campanhas orientadas especificamente ao cliente em vias de desistência. Queremos minimizar esses custos focando apenas neste grupo de clientes, ao mesmo tempo que levamos em conta o (desejável) efeito colateral de que, fornecendo ao cliente satisfeito apenas a propaganda que lhe faça sentido, sua satisfação tende a ser maior. Logo, ao se lançar mão de métodos de análise preditiva utilizando aprendizado de máquina, queremos:
 
-1. selecionar um algoritmo que *minimize a taxa de falsos negativos*
-2. ajustar corretamente seus hiperparâmetros para o resultado desejado
-3. 
+1. através de treinamento utilizando uma massa de dados com classes conhecidas de resultados, selecionar um algoritmo que *minimize a taxa de falsos negativos*
+2. ajustar corretamente seus hiperparâmetros para obter o resultado desejado
+3. usar o algoritmo assim otimizado para prever, em um massa de dados de clientes ainda não classificada, para quais clientes minha empresa deve realizar uma intervenção direcionada de marketing
 
 <xxx>
 Logo, precisamos entender qual a importância de que o algoritmo e os hiperparâmetros selecionados privilegiem uma métrica como a *precisão*, pois ela indica a razão entre os positivos verdadeiros 
