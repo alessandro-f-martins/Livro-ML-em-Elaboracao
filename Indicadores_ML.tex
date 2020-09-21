@@ -1,0 +1,335 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdfborder={0 0 0},
+  breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-2}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\date{}
+
+\begin{document}
+
+\title{Indicadores para Aprendizado de Máquina e seu Uso na Seleção de Algoritmos para Análise de Dados}
+
+\author{Alessandro F. Martins\\
+Diretor de Consultoria\\
+AFM Estratégia de TI para Negócios}
+
+\date{21 de setembro de 2020}
+\maketitle
+
+
+\renewcommand{\abstractname}{Resumo}
+\begin{abstract}
+
+Cada demanda de negócio pede uma abordagem particular em relação ao
+tratamento dos dados para análise preditiva. Conhecendo-se a necessidade
+específica, é possível identificar a métrica mais adequada e usá-la como
+base para selecionar o algoritmo de aprendizado de máquina que a atenda
+da melhor forma.
+
+Uma vez identificada a métrica apropriada, usam-se \emph{metaalgoritmos}
+(ou métodos para otimização de \emph{hiperparâmetros}) para buscar, no
+espaço de possíveis entradas (ou \emph{espaço de fase}) de cada
+algoritmo, aqueles parâmetros que maximizam a capacidade do algoritmo de
+produzir os resultados desejados de previsão.
+
+Neste capítulo, nossa tarefa é descrever os conceitos de cada métrica,
+em que contextos de negócio elas se fazem mais relevantes, e explorar os
+três principais métodos de otimização de hiperparâmetros utilizados por
+aplicações no mercado: \emph{Grid Search}, \emph{Randomized Search} e
+\emph{Bayes Search}.
+
+\end{abstract}
+
+\hypertarget{header-n1070}{%
+\subsection{Introdução}\label{header-n1070}}
+
+É importante ter-se em mente que \emph{nenhuma métrica é perfeita}. Toda
+forma e conceito de medição acaba privilegiando alguma parte da
+informação que se quer trabalhar em detrimento de outros aspectos.
+
+Analisemos três situações distintas em suas demandas e peculiaridades.
+
+\hypertarget{header-n1074}{%
+\paragraph{\texorpdfstring{Análise de desistências
+(\emph{Churn})}{Análise de desistências (Churn)}}\label{header-n1074}}
+
+No primeiro caso, temos uma empresa de serviços de telecomunicações
+(internet, telefonia fixa e móvel, TV por assinatura) que deseja reduzir
+sua perda de receita por \emph{Churn} (desistência de clientes, com
+possível migração para a concorrência). Para isso, ela deseja obter as
+seguintes informações:
+
+\begin{itemize}
+\item
+  Quais são as razões sob a responsabilidade da empresa que
+  preponderantemente estão levando os clientes a deixar a empresa? São
+  problemas técnicos, comerciais ou operacionais?
+\item
+  Existem características específicas dos clientes com tendência a
+  desistência? São fatores demográficos (idade, região, possui família,
+  renda média), financeiros (pagamentos atrasados ou em atraso) ou
+  outros (avaliação de conteúdo constantemente baixa, constante
+  utilização do Serviço ao Cliente)?
+\item
+  Quais são os clientes em minha base mais propensos à desistência no
+  próximo ciclo de avaliação de \emph{Churn}? Quais ações devem ser
+  tomadas para mantê-los?
+\item
+  Quais as melhores campanhas a se organizar para garantir a fidelização
+  de meus clientes?
+\end{itemize}
+
+Consideremos os custos de retenção ativa -- campanhas orientadas
+especificamente ao cliente em vias de desistência. Queremos minimizar
+esses custos focando apenas neste grupo de clientes, ao mesmo tempo que
+levamos em conta o (desejável) efeito colateral de que, fornecendo ao
+cliente satisfeito apenas a propaganda que lhe faça sentido, sua
+satisfação tende a ser maior. Logo, ao se lançar mão de métodos de
+análise preditiva utilizando aprendizado de máquina, queremos:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  selecionar um algoritmo que \emph{minimize a taxa de falsos negativos}
+\item
+  ajustar corretamente seus hiperparâmetros para o resultado desejado
+\item
+\end{enumerate}
+
+Logo, precisamos entender qual a importância de que o algoritmo e os
+hiperparâmetros selecionados privilegiem uma métrica como a
+\emph{precisão}, pois ela indica a razão entre os positivos verdadeiros
+
+Tal
+
+\hypertarget{header-n1095}{%
+\paragraph{Diagnóstico médico assistido}\label{header-n1095}}
+
+No segundo,
+
+\hypertarget{header-n1098}{%
+\paragraph{Análise de fraudes em cartão de crédito}\label{header-n1098}}
+
+Finamente, análise de fraudes em cartão de crédito
+
+\hypertarget{header-n1101}{%
+\subsection{Métricas para Análise de Dados}\label{header-n1101}}
+
+\hypertarget{header-n1102}{%
+\subsubsection{Nomenclatura inicial:}\label{header-n1102}}
+
+O processo de \emph{validação} de um algoritmo e dos hiperparâmetros
+utilizados em seu ajuste fino é uma técnica bastante utilizada para
+estabelecer
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  separa-se uma parte da massa de dados para a tarefa de validação. 25\%
+  é considerado uma boa prática para quantidades maiores de dados --
+  mais de 5000 \emph{data points} -- enquanto massas menores devam ter
+  uma fração maior a ser separada (por volta de 30\% a 33\%)
+\item
+  realiza-se o processo de treinamento com o restante dos dados.
+  Internamente, a aplicação de aprendizado de máquina também divide os
+  dados 
+\end{enumerate}
+
+\begin{itemize}
+\item
+  \textbf{Positivos reais} \textbf{\emph{(TP)}}: dados previstos como
+  sendo do caso positivo que, na validação, mostraram-se corretamente
+  classificados
+\item
+  \textbf{Negativos reais} \textbf{\emph{(TN)}}: dados previstos como
+  sendo do caso negativo que, na validação, mostraram-se corretamente
+  classificados
+\item
+  \textbf{Falsos positivos} \textbf{\emph{(FP)}}: dados previstos como
+  sendo do caso positivo que, na validação, mostraram-se incorretamente
+  classificados, sendo realmente casos negativos
+\item
+  \textbf{Falsos negativos} \textbf{\emph{(FN)}}: dados previstos como
+  sendo do caso negativo que, na validação, mostraram-se incorretamente
+  classificados, sendo realmente casos positivos 
+\end{itemize}
+
+\hypertarget{header-n1120}{%
+\subsubsection{Descrição das métricas}\label{header-n1120}}
+
+\begin{itemize}
+\item
+  \textbf{\emph{Acurácia}}: probabilidade de sucesso do modelo de
+  identificar os valores reais. Medida geral de êxito do modelo. Pode
+  levar a conclusões errôneas em caso de desbalanceamento entre as
+  classes observadas. Corresponde ao cálculo:
+\end{itemize}
+
+\[ACC = \frac{TP + TN}{TP + TN + FP + FN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{Precisão}}: probabilidade de sucesso do modelo de fazer
+  uma classificação positiva correta. Relevante quando o custo de falsos
+  positivos é alto.
+\end{itemize}
+
+\[PRC = \frac{TP}{TP + FP}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{Sensibilidade}} (ou \emph{Recall}): medida da capacidade
+  do modelo de identificar resultados positivos reais. Relevante quando
+  o custo de falsos negativos é alto.
+\end{itemize}
+
+\[REC = \frac{TP}{TP + FN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{F1}}: média harmônica entre Precisão e Sensibilidade.
+  Indica se há um baixo número de valores falsos (positivos e
+  negativos), reduzindo a chance de alarmes falsos enquanto identifica
+  bem os resultados reais. Mais relevante que a Acurácia, em especial no
+  caso de uma distribuição de classes desbalanceada.
+\end{itemize}
+
+\[F1 =  2\times\frac{PRC \times REC}{PRC + REC}   = \frac{2TP}{2TP + FP + FN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{ROC AuC}} (\emph{Área sob a curva característica de
+  operação do receptor}): medida da capacidade do modelo de separar
+  exemplos positivos e negativos. Resume o \emph{trade-off} entre a taxa
+  de positivos verdadeiros e a taxa de falsos positivos.
+\item
+  \textbf{\emph{PRC AuC}} (\emph{Área sob a curva de precisão/recall}):
+  resume o \emph{trade-off} entre a Precisão e a Sensibilidade do
+  modelo. Especialmente relevante quando a razão de valores positivos e
+  negativos no conjunto de dados é muito desbalanceada.
+\item
+  \textbf{\emph{MCC}} (\emph{Coeficiente de correlação de Matthews}, ou
+  \emph{coeficiente fi (\(\phi\))}): coeficiente de correlação entre as
+  classificações observadas e previstas. Um valor de +100\% representa
+  uma previsão perfeita, 0 uma previsão não melhor que uma previsão
+  aleatória e -100\% um desacordo total entre previsão e observação. 
+\end{itemize}
+
+\[MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{CSI}} (\emph{Índice crítico de sucesso}, também
+  conhecido como \textbf{\emph{TS}}: \emph{threat score}): fração de
+  positivos verdadeiros que foram corretamente previstos. Equivalente a
+  um cálculo de Acurácia em que não se levam em consideração os valores
+  negativos reais.
+\end{itemize}
+
+\[CSI = \frac{TP}{TP + FP + FN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{FNR}} (\emph{Taxa de perdas}): equivale à probabilidade
+  de se classificar uma condição positivo real como negativa.
+\end{itemize}
+
+\[FNR = \frac{FN}{TP + FN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{FPR}} (\emph{Taxa de alarmes falsos}): equivale à
+  probabilidade de classificar uma condição negativa real como positiva.
+\end{itemize}
+
+\[FPR = \frac{FP}{FP + TN}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{FDR}} (\emph{Taxa de descobertas falsas}): probabilidade
+  do modelo de realizar uma classificação positiva incorreta.
+  Complemento da Precisão.
+\end{itemize}
+
+\[FDR = \frac{FP}{TP + FP}\]
+
+\begin{itemize}
+\item
+  \textbf{\emph{FOR}} (\emph{Taxa de omissões falsas}): probabilidade do
+  modelo de realizar uma classificação negativa incorreta. Complemento
+  do Valor Preditivo Negativo
+\end{itemize}
+
+\[FOR = \frac{TN}{TN + FN}\]
+
+\hypertarget{header-n1166}{%
+\subsection{Referências}\label{header-n1166}}
+
+{[}1{]}: Bernard Marr -\/- \emph{What Is The Difference Between
+Artificial Intelligence And Machine Learning?}, em Forbes:
+https://www.forbes.com/sites/forbesagencycouncil/2018/08/01/do-you-know-the-difference-between-data-analytics-and-ai-machine-learning/\#3a8918cc5878
+
+{[}2{]}: Vance Reavie -\/- \emph{Do You Know The Difference Between Data
+Analytics And AI Machine Learning?}, em Forbes:
+https://www.forbes.com/sites/bernardmarr/2016/12/06/what-is-the-difference-between-artificial-intelligence-and-machine-learning/\#7ed51bf72742
+
+{[}3{]}: Stuart Russell, Peter Norvig -\/- \emph{Artificial Intelligence
+-- A Modern Approach (3\textsuperscript{rd} Edition)}, ISBN:
+978-0-13-604259-4
+
+\end{document}
