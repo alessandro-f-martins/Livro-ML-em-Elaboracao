@@ -1,2 +1,7 @@
 out
 out/*
+other
+other/*
+*.log
+*.aux
+*.gz

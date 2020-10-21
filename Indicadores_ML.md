@@ -18,8 +18,6 @@ Neste capítulo, nossa tarefa é descrever os conceitos de cada métrica, em que
 
 ## Introdução
 
-
-
 É importante ter-se em mente que *nenhuma métrica é perfeita*. Toda forma e conceito de medição acaba privilegiando alguma parte da informação que se quer trabalhar em detrimento de outros aspectos.
 
 
@@ -29,18 +27,24 @@ Analisemos três situações distintas em suas demandas e peculiaridades.
 
 No primeiro caso, temos uma empresa de serviços de telecomunicações (internet, telefonia fixa e móvel, TV por assinatura) que deseja reduzir sua perda de receita por *Churn* (desistência de clientes, com possível migração para a concorrência). Para isso, ela deseja obter as seguintes informações:
 
-- Quais são as razões sob a responsabilidade da empresa  que preponderantemente estão levando os clientes a deixar a empresa? São problemas técnicos, comerciais ou operacionais?
-- Existem características específicas dos clientes com tendência a desistência? São fatores demográficos (idade, região, possui família, renda média), financeiros (pagamentos atrasados ou em atraso) ou outros (avaliação de conteúdo constantemente baixa, constante utilização do Serviço ao Cliente)?
+- Quais são as razões sob a responsabilidade da empresa que preponderantemente estão levando os clientes a deixar a empresa? São problemas técnicos, comerciais ou operacionais?
+
+- Existem características específicas dos clientes com tendência a desistência? São fatores demográficos (idade, região, possui família, renda média), financeiros (pagamentos em atraso) ou outros (avaliação de conteúdo constantemente baixa, constante utilização do Serviço ao Cliente)?
+
 - Quais são os clientes em minha base mais propensos à desistência no próximo ciclo de avaliação de *Churn*? Quais ações devem ser tomadas para mantê-los?
+
 - Quais as melhores campanhas a se organizar para garantir a fidelização de meus clientes?
 
-Consideremos os custos de retenção ativa, que corresponde a campanhas orientadas especificamente ao cliente em vias de desistência. Queremos minimizar esses custos focando apenas neste grupo de clientes, ao mesmo tempo que levamos em conta o (desejável) efeito colateral de que, fornecendo ao cliente satisfeito apenas a propaganda que lhe faça sentido, sua satisfação tende a ser maior. Logo, ao se lançar mão de métodos de análise preditiva utilizando aprendizado de máquina, queremos:
+Consideremos os custos de retenção ativa, que correspondem a campanhas orientadas especificamente ao cliente em vias de desistência. Queremos minimizar esses custos focando apenas neste grupo, ao mesmo tempo que levamos em conta o (desejável) efeito colateral de que, fornecendo ao cliente satisfeito apenas a propaganda que lhe faça sentido, sua satisfação tende a ser maior. Logo, ao se lançar mão de métodos de análise preditiva utilizando aprendizado de máquina, queremos:
 
-1. através de treinamento utilizando uma massa de dados com classes conhecidas de resultados, selecionar um algoritmo que *minimize a taxa de falsos negativos*
-2. ajustar corretamente seus hiperparâmetros para obter o resultado desejado
-3. usar o algoritmo assim otimizado para prever, em um massa de dados de clientes ainda não classificada, para quais clientes minha empresa deve realizar uma intervenção direcionada de marketing
+1. através de treinamento utilizando uma massa de dados com classes conhecidas de resultados, selecionar um algoritmo que *minimize a taxa de falsos negativos*;
+
+2. ajustar corretamente seus hiperparâmetros para obter o resultado desejado;
+
+3. usar o algoritmo assim otimizado para prever, em um massa de dados de clientes ainda não classificada, para quais clientes minha empresa deve realizar uma intervenção direcionada de marketing.
 
 <xxx>
+
 Logo, precisamos entender qual a importância de que o algoritmo e os hiperparâmetros selecionados privilegiem uma métrica como a *precisão*, pois ela indica a razão entre os positivos verdadeiros 
 
 Tal
@@ -62,6 +66,7 @@ Finamente, análise de fraudes em cartão de crédito
 O processo de *validação* de um algoritmo e dos hiperparâmetros utilizados em seu ajuste fino é uma técnica bastante utilizada para estabelecer 
 
 1. separa-se uma parte da massa de dados para a tarefa de validação. 25% é considerado uma boa prática para quantidades maiores de dados – mais de 5000 *data points* – enquanto massas menores devam ter uma fração maior a ser separada (por volta de 30% a 33%)
+
 2. realiza-se o processo de treinamento com o restante dos dados. Internamente, a aplicação de aprendizado de máquina também divide os dados 
 
 
